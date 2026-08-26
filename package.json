@@ -1,0 +1,32 @@
+{
+    "name": "@wazum/rte-ckeditor-no-translate",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite build --watch",
+        "typecheck": "tsc --noEmit",
+        "test": "web-test-runner",
+        "test:watch": "web-test-runner --watch"
+    },
+    "devDependencies": {
+        "@ckeditor/ckeditor5-basic-styles": "47.6.0",
+        "@ckeditor/ckeditor5-core": "47.6.0",
+        "@ckeditor/ckeditor5-editor-classic": "47.6.0",
+        "@ckeditor/ckeditor5-engine": "47.6.0",
+        "@ckeditor/ckeditor5-paragraph": "47.6.0",
+        "@ckeditor/ckeditor5-ui": "47.6.0",
+        "@ckeditor/ckeditor5-utils": "47.6.0",
+        "@open-wc/testing": "^4.0.0",
+        "@types/mocha": "^10.0.10",
+        "@web/dev-server-esbuild": "^1.0.2",
+        "@web/test-runner": "^0.20.0",
+        "@web/test-runner-playwright": "^0.11.1",
+        "typescript": "^5.7.2",
+        "vite": "^7.0.0"
+    },
+    "allowScripts": {
+        "esbuild@0.27.7": true
+    }
+}

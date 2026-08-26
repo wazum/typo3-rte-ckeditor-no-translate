@@ -1,0 +1,42 @@
+{
+    "name": "wazum/rte-ckeditor-no-translate",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "description": "CKEditor 5 button to mark text as not translatable with translate=\"no\"",
+    "homepage": "https://github.com/wazum/rte-ckeditor-no-translate",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Wolfgang Klinger",
+            "email": "wolfgang@wazum.com",
+            "role": "Lead Developer"
+        }
+    ],
+    "keywords": [
+        "typo3",
+        "ckeditor",
+        "rte",
+        "translate",
+        "notranslate",
+        "translation",
+        "deepl"
+    ],
+    "require": {
+        "php": "^8.2",
+        "typo3/cms-core": "^13.4 || ^14.0",
+        "typo3/cms-rte-ckeditor": "^13.4 || ^14.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "rte_ckeditor_no_translate"
+        }
+    }
+}
