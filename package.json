@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "type": "module",
     "private": true,
+    "imports": {
+        "#src/*": "./src/*"
+    },
     "scripts": {
         "build": "vite build",
         "dev": "vite build --watch",
