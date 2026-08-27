@@ -48,7 +48,19 @@ no formatting. Links work the same way.
 
 ## Options
 
-`editor.config.noTranslate.mode` sets what the editor writes:
+`noTranslate.mode` sets what the editor writes. It goes into the same preset file,
+below the imports:
+
+```yaml
+imports:
+  - { resource: 'EXT:rte_ckeditor/Configuration/RTE/Default.yaml' }
+  - { resource: 'EXT:rte_ckeditor_no_translate/Configuration/RTE/NoTranslate.yaml' }
+
+editor:
+  config:
+    noTranslate:
+      mode: both
+```
 
 | mode                  | output                                      |
 | --------------------- | ------------------------------------------- |
@@ -58,13 +70,6 @@ no formatting. Links work the same way.
 
 Every mode reads back all three forms. Pick `class` or `both` for the old Google
 website translation widget, which looks for the class.
-
-```yaml
-editor:
-  config:
-    noTranslate:
-      mode: both
-```
 
 ## Known limits
 
