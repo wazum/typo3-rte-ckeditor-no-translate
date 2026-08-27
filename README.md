@@ -14,22 +14,25 @@ composer require wazum/rte-ckeditor-no-translate
 
 ## Set it up
 
-The extension ships a preset. Select it in the page TSconfig:
+Add our file to the imports of your own RTE preset:
+
+```yaml
+imports:
+  # whatever your preset imports already
+  - { resource: 'EXT:rte_ckeditor/Configuration/RTE/Default.yaml' }
+  # add this line
+  - { resource: 'EXT:rte_ckeditor_no_translate/Configuration/RTE/NoTranslate.yaml' }
+```
+
+Import it last. TYPO3 appends list values, so the button lands at the end of your
+toolbar. Write your own `toolbar.items` list to place `noTranslate` somewhere else.
+
+For a first look without touching your preset, the extension registers one that
+holds the TYPO3 default plus the button:
 
 ```
 RTE.default.preset = no_translate
 ```
-
-With your own preset, import our configuration file instead:
-
-```yaml
-imports:
-  - { resource: 'EXT:rte_ckeditor/Configuration/RTE/Default.yaml' }
-  - { resource: 'EXT:rte_ckeditor_no_translate/Configuration/RTE/NoTranslate.yaml' }
-```
-
-TYPO3 appends list values, so the button lands at the end of your toolbar. Write
-your own `toolbar.items` list to place `noTranslate` somewhere else.
 
 ## For editors
 
