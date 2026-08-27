@@ -1,11 +1,10 @@
 # CKEditor no translate
 
-TYPO3 extension with a CKEditor 5 button that marks selected text as not
-translatable. The saved HTML gets `translate="no"`, the standard HTML attribute
-that tells browsers and translation services to leave the text alone. Chrome and
-Edge, DeepL in HTML mode and Azure Translator all respect it.
+A button for the TYPO3 rich text editor that marks text as not translatable. The
+saved HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator skip
+that text.
 
-Works with TYPO3 13.4 and 14.
+Needs TYPO3 13.4 or 14.3.
 
 ## Install
 
@@ -13,16 +12,15 @@ Works with TYPO3 13.4 and 14.
 composer require wazum/rte-ckeditor-no-translate
 ```
 
-## Use it
+## Set it up
 
-The extension brings a ready made preset. Set it for your rich text fields in the
-page TSconfig:
+The extension ships a preset. Select it in the page TSconfig:
 
 ```
 RTE.default.preset = no_translate
 ```
 
-If you already have an own preset, import the small configuration file instead:
+With your own preset, import our configuration file instead:
 
 ```yaml
 imports:
@@ -30,26 +28,24 @@ imports:
   - { resource: 'EXT:rte_ckeditor_no_translate/Configuration/RTE/NoTranslate.yaml' }
 ```
 
-TYPO3 adds list values to the ones that are already there, so the button lands at
-the end of your toolbar. To put it somewhere else, write your own `toolbar.items`
-list and add `noTranslate` where you want it.
+TYPO3 appends list values, so the button lands at the end of your toolbar. Write
+your own `toolbar.items` list to place `noTranslate` somewhere else.
 
-## What editors see
+## For editors
 
-Marked text gets a yellow background with a dashed underline in the editor, and a
-tooltip that says "Not translated" on hover. The toolbar button is shown as active
-whenever the cursor sits in marked text.
+Marked text gets a yellow background and a dashed underline, plus the tooltip
+"Not translated" on hover. The button looks active while the cursor sits in
+marked text.
 
-To remove the mark, put the cursor in the marked text and click the button once.
-The whole mark goes, the same way unlink works. Selecting a part of the text and
-clicking removes the mark only for that part.
+Click the button again to remove the mark. With the cursor inside, the whole mark
+goes, like unlink does. With a part selected, only that part loses the mark.
 
-"Remove Format" does not touch the mark, because "do not translate" is meaning and
-not formatting. Links behave the same way.
+"Remove Format" keeps the mark, because "do not translate" carries meaning and is
+no formatting. Links work the same way.
 
 ## Options
 
-`editor.config.noTranslate.mode` decides what the editor writes:
+`editor.config.noTranslate.mode` sets what the editor writes:
 
 | mode                  | output                                      |
 | --------------------- | ------------------------------------------- |
@@ -57,8 +53,8 @@ not formatting. Links behave the same way.
 | `class`               | `<span class="notranslate">`                |
 | `both`                | `<span translate="no" class="notranslate">` |
 
-All three forms are read back, whatever the mode is. Use `class` or `both` if you
-serve the old Google website translation widget, which looks for the class.
+Every mode reads back all three forms. Pick `class` or `both` for the old Google
+website translation widget, which looks for the class.
 
 ```yaml
 editor:
@@ -69,20 +65,30 @@ editor:
 
 ## Styling
 
-Marked text gets the class `notranslate` in the editor, in every mode, so editors
-can see it. The style comes from
-`Resources/Public/Css/no-translate.css`. Replace it with your own file in
-`editor.config.contentsCss` if you want it to look different. The same file works
-in the frontend.
+The editor styles marked text with `Resources/Public/Css/no-translate.css`. Point
+`editor.config.contentsCss` to your own file to change the look. That file also
+works in the frontend.
 
 ## Development
 
 ```bash
 npm install
 npm test
-npm run build     # writes Resources/Public/JavaScript/no-translate.js
+npm run build
 ddev exec '.Build/bin/phpunit -c phpunit-functional.xml --testdox'
 ```
 
-The design decisions are written down in
+`npm run build` writes `Resources/Public/JavaScript/no-translate.js`, which is
+part of the repository. The design notes live in
 `docs/superpowers/specs/2026-08-26-ckeditor-no-translate-design.md`.
+
+## Credits
+
+The toolbar icon builds on the `ai-translate` icon from
+[CKEditor 5](https://github.com/ckeditor/ckeditor5), without the AI sparkle and
+with a slash on top. CKEditor 5 is licensed under GPL-2.0-or-later, the same
+license as this extension.
+
+## License
+
+GPL-2.0-or-later
