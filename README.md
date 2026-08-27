@@ -14,6 +14,10 @@ skip that text.
 
 Needs TYPO3 13.4, or 14.3 and newer.
 
+<p align="center">
+  <img src=".github/screenshot.png" alt="The words Bic Flex marked in the rich text editor, with the Do not translate button active" width="820">
+</p>
+
 ## Install
 
 ```bash
