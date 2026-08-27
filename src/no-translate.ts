@@ -1,11 +1,12 @@
 import { Plugin } from '@ckeditor/ckeditor5-core';
+import type { Editor } from '@ckeditor/ckeditor5-core';
 import { AttributeCommand } from '@ckeditor/ckeditor5-basic-styles';
 import { findAttributeRange } from '@ckeditor/ckeditor5-typing';
 import { ButtonView } from '@ckeditor/ckeditor5-ui';
 import type { ViewElementDefinition } from '@ckeditor/ckeditor5-engine';
 
-const ATTRIBUTE = 'noTranslate';
-const CLASS = 'notranslate';
+const MODEL_ATTRIBUTE = 'noTranslate';
+const NO_TRANSLATE_CLASS = 'notranslate';
 const ICON = `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
     <mask id="no-translate-slash">
         <rect width="20" height="20" fill="#fff"/>
@@ -28,37 +29,75 @@ const ICON = `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 
 type Mode = 'attribute' | 'class' | 'both';
 
+declare module '@ckeditor/ckeditor5-core' {
+    interface EditorConfig {
+        noTranslate?: {
+            mode?: Mode;
+        };
+    }
+}
+
+function isMode(value: unknown): value is Mode {
+    return value === 'attribute' || value === 'class' || value === 'both';
+}
+
+function getMode(editor: Editor): Mode {
+    const mode = editor.config.get('noTranslate.mode');
+
+    return isMode(mode) ? mode : 'attribute';
+}
+
 function viewFor(mode: Mode): ViewElementDefinition {
-    if (mode === 'class') {
-        return { name: 'span', classes: CLASS };
-    }
+    switch (mode) {
+        case 'attribute':
+            return { name: 'span', attributes: { translate: 'no' } };
 
-    if (mode === 'both') {
-        return { name: 'span', classes: CLASS, attributes: { translate: 'no' } };
-    }
+        case 'class':
+            return { name: 'span', classes: NO_TRANSLATE_CLASS };
 
-    return { name: 'span', attributes: { translate: 'no' } };
+        case 'both':
+            return { name: 'span', classes: NO_TRANSLATE_CLASS, attributes: { translate: 'no' } };
+    }
 }
 
 class NoTranslateCommand extends AttributeCommand {
     public override execute(options: { forceValue?: boolean } = {}): void {
-        const model = this.editor.model;
-        const selection = model.document.selection;
-
-        const position = selection.getFirstPosition()!;
-        const insideMark = position.textNode?.hasAttribute(this.attributeKey) === true;
-
-        if (selection.isCollapsed && insideMark && options.forceValue === undefined) {
-            const range = findAttributeRange(position, this.attributeKey, true, model);
-            model.change((writer) => {
-                writer.removeAttribute(this.attributeKey, range);
-                writer.removeSelectionAttribute(this.attributeKey);
-            });
-
+        if (options.forceValue === undefined && this.removeMarkAroundCursor()) {
             return;
         }
 
         super.execute(options);
+    }
+
+    /**
+     * A cursor inside a mark removes the whole mark, the way unlink does.
+     *
+     * The state comes from the text node and not from `this.value`, because
+     * `this.value` is also true right after the button armed the attribute for
+     * the next keystroke, while no text carries the mark yet. Acting on that
+     * state left the button stuck in the on position and, with the cursor at the
+     * edge of a mark, deleted a mark the editor wanted to keep.
+     */
+    private removeMarkAroundCursor(): boolean {
+        const model = this.editor.model;
+        const selection = model.document.selection;
+        const position = selection.getFirstPosition();
+
+        if (!selection.isCollapsed || position === null) {
+            return false;
+        }
+
+        if (position.textNode?.hasAttribute(this.attributeKey) !== true) {
+            return false;
+        }
+
+        const range = findAttributeRange(position, this.attributeKey, true, model);
+        model.change((writer) => {
+            writer.removeAttribute(this.attributeKey, range);
+            writer.removeSelectionAttribute(this.attributeKey);
+        });
+
+        return true;
     }
 }
 
@@ -68,48 +107,67 @@ export class NoTranslate extends Plugin {
     }
 
     public init(): void {
-        const editor = this.editor;
+        this.editor.config.define('noTranslate', { mode: 'attribute' });
 
-        editor.config.define('noTranslate', { mode: 'attribute' });
+        this.defineSchema();
+        this.defineConverters();
+        this.defineToolbarButton(this.defineCommand());
+    }
 
-        editor.model.schema.extend('$text', { allowAttributes: ATTRIBUTE });
+    private defineSchema(): void {
+        this.editor.model.schema.extend('$text', { allowAttributes: MODEL_ATTRIBUTE });
+    }
 
-        editor.conversion.for('dataDowncast').attributeToElement({
-            model: ATTRIBUTE,
-            view: viewFor(editor.config.get('noTranslate.mode') as Mode),
+    private defineConverters(): void {
+        const conversion = this.editor.conversion;
+        const dataView = viewFor(getMode(this.editor));
+
+        conversion.for('dataDowncast').attributeToElement({
+            model: MODEL_ATTRIBUTE,
+            view: dataView,
         });
 
-        editor.conversion.for('editingDowncast').attributeToElement({
-            model: ATTRIBUTE,
-            view: { name: 'span', classes: CLASS, attributes: { title: 'Not translated' } },
+        conversion.for('editingDowncast').attributeToElement({
+            model: MODEL_ATTRIBUTE,
+            view: {
+                name: 'span',
+                classes: NO_TRANSLATE_CLASS,
+                attributes: { title: this.editor.locale.t('Not translated') },
+            },
         });
 
-        editor.conversion.for('upcast').elementToAttribute({
-            model: ATTRIBUTE,
+        conversion.for('upcast').elementToAttribute({
+            model: { key: MODEL_ATTRIBUTE, value: true },
             view: { name: 'span', attributes: { translate: 'no' } },
         });
 
-        editor.conversion.for('upcast').elementToAttribute({
-            model: ATTRIBUTE,
-            view: { name: 'span', classes: CLASS },
+        conversion.for('upcast').elementToAttribute({
+            model: { key: MODEL_ATTRIBUTE, value: true },
+            view: { name: 'span', classes: NO_TRANSLATE_CLASS },
         });
+    }
 
-        const command = new NoTranslateCommand(editor, ATTRIBUTE);
-        editor.commands.add(ATTRIBUTE, command);
+    private defineCommand(): NoTranslateCommand {
+        const command = new NoTranslateCommand(this.editor, MODEL_ATTRIBUTE);
+        this.editor.commands.add(MODEL_ATTRIBUTE, command);
 
-        editor.ui.componentFactory.add(ATTRIBUTE, (locale) => {
+        return command;
+    }
+
+    private defineToolbarButton(command: NoTranslateCommand): void {
+        this.editor.ui.componentFactory.add(MODEL_ATTRIBUTE, (locale) => {
             const button = new ButtonView(locale);
 
             button.set({
-                label: 'Do not translate',
+                label: locale.t('Do not translate'),
                 icon: ICON,
                 tooltip: true,
                 isToggleable: true,
             });
             button.bind('isOn', 'isEnabled').to(command, 'value', 'isEnabled');
             button.on('execute', () => {
-                editor.execute(ATTRIBUTE);
-                editor.editing.view.focus();
+                this.editor.execute(MODEL_ATTRIBUTE);
+                this.editor.editing.view.focus();
             });
 
             return button;
