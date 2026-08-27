@@ -31,9 +31,14 @@ export class NoTranslate extends Plugin {
 
         editor.model.schema.extend('$text', { allowAttributes: ATTRIBUTE });
 
-        editor.conversion.for('downcast').attributeToElement({
+        editor.conversion.for('dataDowncast').attributeToElement({
             model: ATTRIBUTE,
             view: viewFor(editor.config.get('noTranslate.mode') as Mode),
+        });
+
+        editor.conversion.for('editingDowncast').attributeToElement({
+            model: ATTRIBUTE,
+            view: { name: 'span', classes: CLASS },
         });
 
         editor.conversion.for('upcast').elementToAttribute({

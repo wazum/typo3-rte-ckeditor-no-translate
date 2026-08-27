@@ -91,4 +91,15 @@ describe('NoTranslate', () => {
 
         expect(editor.getData()).to.equal('<p><span class="notranslate" translate="no">Bic Cristal</span></p>');
     });
+
+    it('marks the text with the class in the editor view in every mode', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Bic Cristal</p>');
+
+        selectFirstParagraph(editor);
+        editor.execute('noTranslate');
+
+        expect(editor.editing.view.getDomRoot()!.innerHTML).to.contain('class="notranslate"');
+        expect(editor.getData()).to.equal('<p><span translate="no">Bic Cristal</span></p>');
+    });
 });
