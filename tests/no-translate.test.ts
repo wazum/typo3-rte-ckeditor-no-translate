@@ -104,6 +104,42 @@ describe('NoTranslate', () => {
         expect(editor.getData()).to.equal('<p><span translate="no">Bic Cristal</span></p>');
     });
 
+    it('removes the whole mark when only the cursor sits inside it', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+
+        editor.model.change((writer) => {
+            const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
+            writer.setSelection(writer.createPositionAt(paragraph, 12));
+        });
+        editor.execute('noTranslate');
+
+        expect(editor.getData()).to.equal('<p>Ask for Bic Cristal pens</p>');
+    });
+
+    it('explains the mark with a tooltip in the editor view', async () => {
+        editor = await createEditor();
+        editor.setData('<p><span translate="no">Bic Cristal</span></p>');
+
+        expect(editor.editing.view.getDomRoot()!.innerHTML).to.contain('title="Not translated"');
+    });
+
+    it('shows the button as active when marked text is selected', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+
+        const button = editor.ui.componentFactory.create('noTranslate') as ButtonView;
+        editor.model.change((writer) => {
+            const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
+            writer.setSelection(writer.createRange(
+                writer.createPositionAt(paragraph, 8),
+                writer.createPositionAt(paragraph, 19),
+            ));
+        });
+
+        expect(button.isOn).to.equal(true);
+    });
+
     it('registers a toolbar button that follows the command state', async () => {
         editor = await createEditor();
         editor.setData('<p>Bic Cristal</p>');
