@@ -18,6 +18,16 @@ export class NoTranslate extends Plugin {
             view: { name: 'span', attributes: { translate: 'no' } },
         });
 
+        editor.conversion.for('upcast').elementToAttribute({
+            model: ATTRIBUTE,
+            view: { name: 'span', attributes: { translate: 'no' } },
+        });
+
+        editor.conversion.for('upcast').elementToAttribute({
+            model: ATTRIBUTE,
+            view: { name: 'span', classes: 'notranslate' },
+        });
+
         editor.commands.add(ATTRIBUTE, new AttributeCommand(editor, ATTRIBUTE));
     }
 }

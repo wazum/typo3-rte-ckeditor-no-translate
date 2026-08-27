@@ -44,4 +44,31 @@ describe('NoTranslate', () => {
 
         expect(editor.getData()).to.equal('<p><span translate="no">Bic Cristal</span></p>');
     });
+
+    it('removes the mark when the command runs twice', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Bic Cristal</p>');
+
+        selectFirstParagraph(editor);
+        editor.execute('noTranslate');
+        editor.execute('noTranslate');
+
+        expect(editor.getData()).to.equal('<p>Bic Cristal</p>');
+    });
+
+    it('keeps a span with translate="no" that is already in the content', async () => {
+        editor = await createEditor();
+
+        editor.setData('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+
+        expect(editor.getData()).to.equal('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+    });
+
+    it('reads a span with class notranslate as the same mark', async () => {
+        editor = await createEditor();
+
+        editor.setData('<p><span class="notranslate">Bic Cristal</span></p>');
+
+        expect(editor.getData()).to.equal('<p><span translate="no">Bic Cristal</span></p>');
+    });
 });
