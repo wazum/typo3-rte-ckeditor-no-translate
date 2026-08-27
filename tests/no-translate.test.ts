@@ -1,7 +1,8 @@
 import { expect } from '@open-wc/testing';
 import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic';
 import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
-import type { Element } from '@ckeditor/ckeditor5-engine';
+import type { ModelElement } from '@ckeditor/ckeditor5-engine';
+import type { ButtonView } from '@ckeditor/ckeditor5-ui';
 import { NoTranslate } from '#src/no-translate.js';
 
 async function createEditor(config: Record<string, unknown> = {}): Promise<ClassicEditor> {
@@ -23,7 +24,7 @@ async function destroyEditor(editor: ClassicEditor): Promise<void> {
 
 function selectFirstParagraph(editor: ClassicEditor): void {
     editor.model.change((writer) => {
-        const paragraph = editor.model.document.getRoot()!.getChild(0) as Element;
+        const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
         writer.setSelection(paragraph, 'in');
     });
 }
@@ -101,5 +102,18 @@ describe('NoTranslate', () => {
 
         expect(editor.editing.view.getDomRoot()!.innerHTML).to.contain('class="notranslate"');
         expect(editor.getData()).to.equal('<p><span translate="no">Bic Cristal</span></p>');
+    });
+
+    it('registers a toolbar button that follows the command state', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Bic Cristal</p>');
+        selectFirstParagraph(editor);
+
+        const button = editor.ui.componentFactory.create('noTranslate') as ButtonView;
+        expect(button.isOn).to.equal(false);
+
+        editor.execute('noTranslate');
+
+        expect(button.isOn).to.equal(true);
     });
 });
