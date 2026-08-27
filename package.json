@@ -13,6 +13,9 @@
         "test": "web-test-runner",
         "test:watch": "web-test-runner --watch"
     },
+    "overrides": {
+        "@puppeteer/browsers": "^3.2.1"
+    },
     "devDependencies": {
         "@ckeditor/ckeditor5-basic-styles": "47.6.0",
         "@ckeditor/ckeditor5-core": "47.6.0",

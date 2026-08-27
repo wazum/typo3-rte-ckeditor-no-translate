@@ -4,7 +4,7 @@ A button for the rich text editor that marks text as not translatable. The saved
 HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator skip that
 text.
 
-Needs TYPO3 13.4 or 14.3.
+Needs TYPO3 13.4, or 14.3 and newer.
 
 ## Install
 
