@@ -63,6 +63,21 @@ editor:
       mode: both
 ```
 
+## Known limits
+
+**`class` and `both` mode need `notranslate` in `allowedClasses`.** A site that
+sets `processing.allowedClasses` and leaves out `notranslate` loses the class on
+every save. TYPO3 does not drop it, it writes the first allowed class instead
+(`HtmlParser::HTMLcleaner()`), so the text picks up a style nobody asked for. Add
+`notranslate` to your list. The default `attribute` mode writes no class and stays
+clear of this.
+
+**Old `class="notranslate"` markup turns into `translate="no"`.** In the default
+mode, existing markers change form as soon as an editor saves the record, even
+without touching that text. Leaving them alone is not an option: CKEditor drops
+every class that no plugin claims, so the marker would vanish completely. Pick
+`both` to keep the class for the Google website widget.
+
 ## Styling
 
 The editor styles marked text with `Resources/Public/Css/no-translate.css`. Point
