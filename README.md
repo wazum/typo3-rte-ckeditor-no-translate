@@ -1,8 +1,16 @@
-# TYPO3 CKEditor no translate
+<p align="center">
+  <img src="Resources/Public/Icons/Extension.svg" alt="" width="96" height="96">
+</p>
+<h1 align="center">TYPO3 CKEditor no translate</h1>
+<p align="center"><em>A button for the rich text editor that marks text as not translatable.</em></p>
+<br>
 
-A button for the rich text editor that marks text as not translatable. The saved
-HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator skip that
-text.
+[![Tests](https://github.com/wazum/typo3-rte-ckeditor-no-translate/actions/workflows/tests.yml/badge.svg)](https://github.com/wazum/typo3-rte-ckeditor-no-translate/actions/workflows/tests.yml)
+[![TYPO3](https://img.shields.io/badge/TYPO3-13.4%20%7C%2014.3-orange.svg)](https://get.typo3.org/)
+[![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](LICENSE.txt)
+
+The saved HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator
+skip that text.
 
 Needs TYPO3 13.4, or 14.3 and newer.
 
