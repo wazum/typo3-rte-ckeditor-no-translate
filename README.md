@@ -1,8 +1,8 @@
-# CKEditor no translate
+# TYPO3 CKEditor no translate
 
-A button for the TYPO3 rich text editor that marks text as not translatable. The
-saved HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator skip
-that text.
+A button for the rich text editor that marks text as not translatable. The saved
+HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator skip that
+text.
 
 Needs TYPO3 13.4 or 14.3.
 
