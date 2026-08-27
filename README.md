@@ -34,6 +34,19 @@ TYPO3 adds list values to the ones that are already there, so the button lands a
 the end of your toolbar. To put it somewhere else, write your own `toolbar.items`
 list and add `noTranslate` where you want it.
 
+## What editors see
+
+Marked text gets a yellow background with a dashed underline in the editor, and a
+tooltip that says "Not translated" on hover. The toolbar button is shown as active
+whenever the cursor sits in marked text.
+
+To remove the mark, put the cursor in the marked text and click the button once.
+The whole mark goes, the same way unlink works. Selecting a part of the text and
+clicking removes the mark only for that part.
+
+"Remove Format" does not touch the mark, because "do not translate" is meaning and
+not formatting. Links behave the same way.
+
 ## Options
 
 `editor.config.noTranslate.mode` decides what the editor writes:

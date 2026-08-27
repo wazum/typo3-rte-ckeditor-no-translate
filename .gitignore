@@ -6,4 +6,5 @@ node_modules
 var
 vendor
 config
+.playwright-mcp
 
