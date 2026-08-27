@@ -66,7 +66,7 @@ in the frontend.
 
 ```bash
 npm install
-npm test          # CKEditor plugin tests in a real browser
+npm test
 npm run build     # writes Resources/Public/JavaScript/no-translate.js
 ddev exec '.Build/bin/phpunit -c phpunit-functional.xml --testdox'
 ```
