@@ -94,19 +94,6 @@ these styles with `.ck-content`, so they stay inside the editor.
 
 The frontend needs no CSS. `translate="no"` works without styling.
 
-## Development
-
-```bash
-npm install
-npm test
-npm run build
-ddev exec '.Build/bin/phpunit -c phpunit-functional.xml --testdox'
-```
-
-`npm run build` writes `Resources/Public/JavaScript/no-translate.js`, which is
-part of the repository. The design notes live in
-`docs/superpowers/specs/2026-08-26-ckeditor-no-translate-design.md`.
-
 ## Credits
 
 The toolbar icon builds on the `ai-translate` icon from
