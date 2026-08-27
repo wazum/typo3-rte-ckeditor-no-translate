@@ -89,8 +89,10 @@ every class that no plugin claims, so the marker would vanish completely. Pick
 ## Styling
 
 The editor styles marked text with `Resources/Public/Css/no-translate.css`. Point
-`editor.config.contentsCss` to your own file to change the look. That file also
-works in the frontend.
+`editor.config.contentsCss` to your own file to change the look. TYPO3 prefixes
+these styles with `.ck-content`, so they stay inside the editor.
+
+The frontend needs no CSS. `translate="no"` works without styling.
 
 ## Development
 
