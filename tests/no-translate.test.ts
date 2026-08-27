@@ -22,6 +22,13 @@ async function destroyEditor(editor: ClassicEditor): Promise<void> {
     element?.remove();
 }
 
+function placeCursor(editor: ClassicEditor, offset: number): void {
+    editor.model.change((writer) => {
+        const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
+        writer.setSelection(writer.createPositionAt(paragraph, offset));
+    });
+}
+
 function typeAtSelection(editor: ClassicEditor, text: string): void {
     editor.model.change((writer) => {
         const selection = editor.model.document.selection;
@@ -151,6 +158,26 @@ describe('NoTranslate', () => {
             writer.setSelection(writer.createPositionAt(paragraph, 19));
         });
         editor.execute('noTranslate');
+
+        expect(editor.getData()).to.equal('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+    });
+
+    it('removes the whole mark for a cursor inside it when the value is forced off', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+
+        placeCursor(editor, 12);
+        editor.execute('noTranslate', { forceValue: false });
+
+        expect(editor.getData()).to.equal('<p>Ask for Bic Cristal pens</p>');
+    });
+
+    it('keeps the mark for a cursor inside it when the value is forced on', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+
+        placeCursor(editor, 12);
+        editor.execute('noTranslate', { forceValue: true });
 
         expect(editor.getData()).to.equal('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
     });

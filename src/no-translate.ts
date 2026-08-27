@@ -59,7 +59,7 @@ function viewFor(mode: Mode): ViewElementDefinition {
 
 class NoTranslateCommand extends AttributeCommand {
     public override execute(options: { forceValue?: boolean } = {}): void {
-        if (options.forceValue === undefined && this.removeMarkAroundCursor()) {
+        if (options.forceValue !== true && this.removeMarkAroundCursor()) {
             return;
         }
 
