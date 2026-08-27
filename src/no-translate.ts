@@ -8,11 +8,7 @@ import type { ViewElementDefinition } from '@ckeditor/ckeditor5-engine';
 const MODEL_ATTRIBUTE = 'noTranslate';
 const NO_TRANSLATE_CLASS = 'notranslate';
 const ICON = `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <mask id="no-translate-slash">
-        <rect width="20" height="20" fill="#fff"/>
-        <path d="M2.6 17.4 17.4 2.6" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round"/>
-    </mask>
-    <g mask="url(#no-translate-slash)">
+    <g>
         <g stroke="currentColor" stroke-width="1.2">
             <path fill="none" d="M1.6 3a1.4 1.4 0 0 1 1.4-1.4h6.6A1.4 1.4 0 0 1 11 3v5.2a1.4 1.4 0 0 1-1.4 1.4H6.5l-2.3 2.1V9.6H3A1.4 1.4 0 0 1 1.6 8.2z"/>
             <path fill="none" d="M9 11.8a1.4 1.4 0 0 1 1.4-1.4H17a1.4 1.4 0 0 1 1.4 1.4V17a1.4 1.4 0 0 1-1.4 1.4h-6.6A1.4 1.4 0 0 1 9 17z"/>
@@ -24,6 +20,7 @@ const ICON = `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M19 19h-1.486l-1.289-3.5h-5.85L8.989 19H7.501l4.957-12h1.586zm-8.13-4.7h4.76l-2.38-5.8z"/>
         </g>
     </g>
+    <path d="M3.4 16.6 16.6 3.4" fill="none" stroke="var(--ck-color-base-background, #fff)" stroke-width="3.2" stroke-linecap="round"/>
     <path d="M3.4 16.6 16.6 3.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
 </svg>`;
 
