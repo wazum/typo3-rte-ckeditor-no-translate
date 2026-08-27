@@ -1,0 +1,12 @@
+{
+    "name": "rte-ckeditor-no-translate-e2e",
+    "private": true,
+    "scripts": {
+        "test": "playwright test --reporter=list",
+        "test:headed": "playwright test --reporter=list --headed",
+        "test:ui": "playwright test --ui"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.57.0"
+    }
+}

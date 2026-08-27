@@ -1,0 +1,188 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  javascript:
+    name: JavaScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+
+      # These runner repositories answer 403 now and then, which fails apt and
+      # with it the browser dependency install.
+      - name: Drop unused apt sources
+        run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/azure-cli.list
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Plugin tests
+        run: npm test
+
+      - name: The committed bundle matches the source
+        run: |
+          npm run build
+          git diff --exit-code Resources/Public/JavaScript
+
+  functional:
+    name: Functional (PHP ${{ matrix.php }}, TYPO3 ${{ matrix.typo3 }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            typo3: '13.4'
+          - php: '8.3'
+            typo3: '13.4'
+          - php: '8.4'
+            typo3: '13.4'
+          - php: '8.2'
+            typo3: '14.3'
+          - php: '8.3'
+            typo3: '14.3'
+          - php: '8.4'
+            typo3: '14.3'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, pdo_sqlite
+          tools: composer
+
+      - name: Install dependencies
+        run: |
+          composer config --unset platform.php
+          composer require "typo3/cms-core:^${{ matrix.typo3 }}" "typo3/cms-rte-ckeditor:^${{ matrix.typo3 }}" --no-update --no-interaction
+          composer install --no-interaction
+
+      - name: Functional tests
+        run: .Build/bin/phpunit -c phpunit-functional.xml
+
+  e2e:
+    name: E2E (TYPO3 ${{ matrix.typo3 }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.3'
+            typo3: '13.4'
+            dist: '13.4'
+          - php: '8.3'
+            typo3: '14.3'
+            dist: '14.0'
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: typo3
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    env:
+      ADMIN_PASSWORD: 'Passw0rd!2026'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, pdo_mysql, gd, zip
+          tools: composer
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Create a TYPO3 installation
+        run: composer create-project typo3/cms-base-distribution:^${{ matrix.dist }} typo3 --no-interaction
+
+      - name: Install the extension into it
+        run: |
+          cd typo3
+          composer config --unset platform.php
+          composer config repositories.local path ../
+          composer require "typo3/cms-core:^${{ matrix.typo3 }}" wazum/rte-ckeditor-no-translate:@dev --no-interaction --with-all-dependencies
+
+      - name: Set up TYPO3
+        run: |
+          cd typo3
+          ./vendor/bin/typo3 setup --driver=mysqli --host=127.0.0.1 --port=3306 \
+            --dbname=typo3 --username=root --password=root \
+            --admin-username=admin --admin-user-password='${{ env.ADMIN_PASSWORD }}' \
+            --admin-email=admin@example.com --project-name=no-translate \
+            --server-type=other --no-interaction
+
+      - name: Add the site configuration
+        run: |
+          mkdir -p typo3/config/sites/main
+          printf '%s\n' \
+            "rootPageId: 1" \
+            "base: 'http://127.0.0.1:8080/'" \
+            "languages:" \
+            "  - title: English" \
+            "    enabled: true" \
+            "    languageId: 0" \
+            "    base: /" \
+            "    locale: en_US.UTF-8" \
+            "    flag: us" \
+            > typo3/config/sites/main/config.yaml
+
+      - name: Import the page and the text element
+        run: mysql -h 127.0.0.1 -u root -proot typo3 < tests/E2e/fixtures/database.sql
+
+      - name: Start the web server
+        run: |
+          cd typo3/public
+          PHP_CLI_SERVER_WORKERS=4 php -S 127.0.0.1:8080 &
+          sleep 5
+          curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8080/typo3
+
+      - name: Install Playwright
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/azure-cli.list
+          cd tests/E2e
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: End to end tests
+        run: |
+          cd tests/E2e
+          npm test
+        env:
+          TYPO3_BASE_URL: http://127.0.0.1:8080
+          TYPO3_ADMIN_USER: admin
+          TYPO3_ADMIN_PASS: ${{ env.ADMIN_PASSWORD }}
+          TYPO3_CONTENT_UID: '1'
+
+      - name: Upload the results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-typo3-${{ matrix.typo3 }}
+          path: tests/E2e/test-results/
+          retention-days: 7
+          if-no-files-found: ignore

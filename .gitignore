@@ -1,4 +1,5 @@
 .claude
+.idea
 .Build
 .phpunit.cache
 composer.lock
@@ -7,4 +8,6 @@ var
 vendor
 config
 .playwright-mcp
+tests/E2e/.auth
+tests/E2e/test-results
 
