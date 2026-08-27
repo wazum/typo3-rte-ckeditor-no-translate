@@ -1,0 +1,28 @@
+editor:
+  config:
+    importModules:
+      - { module: '@wazum/rte-ckeditor-no-translate/no-translate.js', exports: ['NoTranslate'] }
+    toolbar:
+      items:
+        - noTranslate
+    contentsCss:
+      - 'EXT:rte_ckeditor_no_translate/Resources/Public/Css/no-translate.css'
+
+processing:
+  HTMLparser_db:
+    tags:
+      span:
+        # RteHtmlParser sets this list for span tags and our value replaces it,
+        # so the TYPO3 default attributes have to stay in here.
+        allowedAttribs:
+          - id
+          - class
+          - style
+          - title
+          - lang
+          - xml:lang
+          - dir
+          - itemscope
+          - itemtype
+          - itemprop
+          - translate
