@@ -71,4 +71,24 @@ describe('NoTranslate', () => {
 
         expect(editor.getData()).to.equal('<p><span translate="no">Bic Cristal</span></p>');
     });
+
+    it('writes only the class in mode class', async () => {
+        editor = await createEditor({ noTranslate: { mode: 'class' } });
+        editor.setData('<p>Bic Cristal</p>');
+
+        selectFirstParagraph(editor);
+        editor.execute('noTranslate');
+
+        expect(editor.getData()).to.equal('<p><span class="notranslate">Bic Cristal</span></p>');
+    });
+
+    it('writes attribute and class in mode both', async () => {
+        editor = await createEditor({ noTranslate: { mode: 'both' } });
+        editor.setData('<p>Bic Cristal</p>');
+
+        selectFirstParagraph(editor);
+        editor.execute('noTranslate');
+
+        expect(editor.getData()).to.equal('<p><span class="notranslate" translate="no">Bic Cristal</span></p>');
+    });
 });
