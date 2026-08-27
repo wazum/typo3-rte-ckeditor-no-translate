@@ -45,9 +45,15 @@ class NoTranslateCommand extends AttributeCommand {
         const model = this.editor.model;
         const selection = model.document.selection;
 
-        if (selection.isCollapsed && this.value && options.forceValue === undefined) {
-            const range = findAttributeRange(selection.getFirstPosition()!, this.attributeKey, true, model);
-            model.change((writer) => writer.removeAttribute(this.attributeKey, range));
+        const position = selection.getFirstPosition()!;
+        const insideMark = position.textNode?.hasAttribute(this.attributeKey) === true;
+
+        if (selection.isCollapsed && insideMark && options.forceValue === undefined) {
+            const range = findAttributeRange(position, this.attributeKey, true, model);
+            model.change((writer) => {
+                writer.removeAttribute(this.attributeKey, range);
+                writer.removeSelectionAttribute(this.attributeKey);
+            });
 
             return;
         }

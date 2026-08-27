@@ -22,6 +22,16 @@ async function destroyEditor(editor: ClassicEditor): Promise<void> {
     element?.remove();
 }
 
+function typeAtSelection(editor: ClassicEditor, text: string): void {
+    editor.model.change((writer) => {
+        const selection = editor.model.document.selection;
+        editor.model.insertContent(
+            writer.createText(text, selection.getAttributes()),
+            selection.getFirstPosition()!,
+        );
+    });
+}
+
 function selectFirstParagraph(editor: ClassicEditor): void {
     editor.model.change((writer) => {
         const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
@@ -115,6 +125,34 @@ describe('NoTranslate', () => {
         editor.execute('noTranslate');
 
         expect(editor.getData()).to.equal('<p>Ask for Bic Cristal pens</p>');
+    });
+
+    it('turns the mark off again for a cursor in unmarked text', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Bic Cristal</p>');
+
+        editor.model.change((writer) => {
+            const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
+            writer.setSelection(writer.createPositionAt(paragraph, 3));
+        });
+        editor.execute('noTranslate');
+        editor.execute('noTranslate');
+        typeAtSelection(editor, 'X');
+
+        expect(editor.getData()).to.equal('<p>BicX Cristal</p>');
+    });
+
+    it('keeps the mark when the cursor sits at its edge', async () => {
+        editor = await createEditor();
+        editor.setData('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
+
+        editor.model.change((writer) => {
+            const paragraph = editor.model.document.getRoot()!.getChild(0) as ModelElement;
+            writer.setSelection(writer.createPositionAt(paragraph, 19));
+        });
+        editor.execute('noTranslate');
+
+        expect(editor.getData()).to.equal('<p>Ask for <span translate="no">Bic Cristal</span> pens</p>');
     });
 
     it('explains the mark with a tooltip in the editor view', async () => {

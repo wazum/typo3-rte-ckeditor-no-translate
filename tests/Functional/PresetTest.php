@@ -42,17 +42,28 @@ final class PresetTest extends FunctionalTestCase
         self::assertContains('noTranslate', $this->preset()['editor']['config']['toolbar']['items']);
     }
 
+    #[Test]
+    public function theJavaScriptModuleIsTaggedForTheBackendForm(): void
+    {
+        self::assertContains('backend.form', $this->javaScriptModules()['tags'] ?? [], 'TYPO3 13.4 renders the import map of a package only when it carries this tag');
+    }
+
     private function preset(): array
     {
         return GeneralUtility::makeInstance(YamlFileLoader::class)
             ->load('EXT:rte_ckeditor_no_translate/Configuration/RTE/Preset.yaml');
     }
 
-    private function resolveModule(string $module): string
+    private function javaScriptModules(): array
     {
-        $imports = require GeneralUtility::getFileAbsFileName(
+        return require GeneralUtility::getFileAbsFileName(
             'EXT:rte_ckeditor_no_translate/Configuration/JavaScriptModules.php'
         );
+    }
+
+    private function resolveModule(string $module): string
+    {
+        $imports = $this->javaScriptModules();
 
         foreach ($imports['imports'] as $prefix => $target) {
             if (str_starts_with($module, $prefix)) {
