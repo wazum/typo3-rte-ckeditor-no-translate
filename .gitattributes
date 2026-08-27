@@ -1,0 +1,25 @@
+# Development environment
+/.ddev export-ignore
+/.ddev/** export-ignore
+/.github export-ignore
+/.github/** export-ignore
+
+# Tests
+/tests export-ignore
+/tests/** export-ignore
+/phpunit-functional.xml export-ignore
+
+# Build setup (the built JavaScript ships in Resources/Public)
+/src export-ignore
+/src/** export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/tsconfig.json export-ignore
+/vite.config.ts export-ignore
+/web-test-runner.config.mjs export-ignore
+
+# Repository files
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/docs export-ignore
+/docs/** export-ignore
