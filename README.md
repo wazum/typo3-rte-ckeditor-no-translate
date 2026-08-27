@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Resources/Public/Icons/Extension.svg" alt="" width="96" height="96">
+  <img src=".github/logo.svg" alt="" width="96" height="96">
 </p>
 <h1 align="center">TYPO3 CKEditor no translate</h1>
 <p align="center"><em>A button for the rich text editor that marks text as not translatable.</em></p>
