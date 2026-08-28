@@ -9,8 +9,8 @@
 [![TYPO3](https://img.shields.io/badge/TYPO3-13.4%20%7C%2014.3-orange.svg)](https://get.typo3.org/)
 [![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](LICENSE.txt)
 
-The saved HTML gets `translate="no"`, so Chrome, Edge, DeepL and Azure Translator
-skip that text.
+The saved HTML gets `translate="no"`, so Chrome, Edge, Firefox, DeepL and Azure
+Translator skip that text.
 
 Needs TYPO3 13.4, or 14.3 and newer.
 
